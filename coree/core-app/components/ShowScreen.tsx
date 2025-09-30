@@ -5,6 +5,21 @@ import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
+const Star = ({ top, left, size = 2, opacity = 0.7 }: { top: number; left: number; size?: number; opacity?: number }) => (
+  <View
+    style={{
+      position: 'absolute',
+      top: `${top}%`,
+      left: `${left}%`,
+      width: size,
+      height: size,
+      borderRadius: size / 2,
+      backgroundColor: 'white',
+      opacity,
+    }}
+  />
+);
+
 export default function ShowScreen() {
   const router = useRouter();
   const motion1 = useRef(new Animated.Value(0)).current;
@@ -42,113 +57,38 @@ export default function ShowScreen() {
     ],
   });
 
+  const stars = [
+    { top: 6, left: 12, size: 2 },
+    { top: 9, left: 28, size: 1.5 },
+    { top: 7, left: 46, size: 2 },
+    { top: 11, left: 62, size: 1.5 },
+    { top: 8, left: 78, size: 2 },
+    { top: 14, left: 18, size: 1.5 },
+    { top: 16, left: 38, size: 1.5 },
+    { top: 15, left: 54, size: 1.5 },
+    { top: 17, left: 82, size: 2 },
+  ];
+
   return (
     <View style={styles.container}>
-      {/* Top-to-bottom base: deep black to dark grey, then faint into transparent to allow overlays */}
-      <LinearGradient
-        colors={[
-          'rgba(0,0,0,1)',       // deep black top
-          'rgba(18,18,20,0.9)',  // near-black
-          'rgba(28,28,32,0.75)', // dark grey
-          'rgba(28,28,32,0.0)',  // fade for overlays
-        ]}
-        locations={[0, 0.22, 0.42, 0.7]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
+      {/* Stars */}
+      {stars.map((s, i) => (
+        <Star key={i} top={s.top} left={s.left} size={s.size as number} opacity={0.7} />
+      ))}
+
+      {/* Bottom decorative images */}
+      <Image
+        source={require('../assets/images/g2/Ellipse 4.png')}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: width,
+          height: height * 0.22,
+        }}
+        resizeMode="cover"
       />
-
-      {/* Misty blue-violet base cloud - widest spread, very soft */}
-      <Animated.View style={[styles.layerBase, translate(motion1, -16, -10)]}>
-        <LinearGradient
-          colors={[
-            'transparent',
-            'rgba(40,70,200,0.10)',   // cool blue
-            'rgba(90,60,220,0.14)',   // indigo
-            'rgba(140,80,255,0.18)',  // soft violet
-            'transparent',
-          ]}
-          locations={[0, 0.28, 0.56, 0.82, 1]}
-          start={{ x: 0.15, y: 0.1 }}
-          end={{ x: 0.85, y: 0.9 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
-
-      {/* Brighter magenta/blue core glow near lower section - more blue bias */}
-      <Animated.View style={[styles.layerCore, translate(motion2, -12, 12)]}>
-        <LinearGradient
-          colors={[
-            'transparent',
-            'rgba(70,120,255,0.16)',  // neon-ish blue
-            'rgba(130,80,255,0.22)',  // neon purple
-            'rgba(210,80,255,0.12)',  // subtle magenta tint
-            'transparent',
-          ]}
-          locations={[0, 0.24, 0.55, 0.78, 1]}
-          start={{ x: 0.8, y: 0.2 }}
-          end={{ x: 0.2, y: 0.95 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
-
-      {/* Deep blue accent cloud for depth */}
-      <Animated.View style={[styles.layerAccent, translate(motion3, 10, -12)]}>
-        <LinearGradient
-          colors={[
-            'transparent',
-            'rgba(30,60,160,0.10)',
-            'rgba(50,90,200,0.14)',
-            'transparent',
-          ]}
-          locations={[0, 0.36, 0.7, 1]}
-          start={{ x: 0.9, y: 0.25 }}
-          end={{ x: 0.1, y: 0.85 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
-
-      {/* Bottom glow: white -> bluish-magenta -> fade to transparent to simulate foggy light pool */}
-      <LinearGradient
-        colors={[
-          'rgba(255,255,255,0.20)', // soft white glow
-          'rgba(180,140,255,0.18)', // pale violet
-          'rgba(120,120,255,0.12)', // bluish layer
-          'rgba(0,0,0,0.0)',        // dissolve into scene
-        ]}
-        locations={[0, 0.28, 0.56, 1]}
-        start={{ x: 0.5, y: 1 }}
-        end={{ x: 0.5, y: 0 }}
-        style={styles.bottomFog}
-      />
-
-      {/* Subtle top vignette to keep top deep and smooth */}
-      <LinearGradient
-        colors={['rgba(0,0,0,0.8)', 'rgba(0,0,0,0.35)', 'transparent']}
-        locations={[0, 0.4, 1]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.topVignette}
-        pointerEvents="none"
-      />
-
-      {/* Subtle side vignettes for edge softness */}
-      <LinearGradient
-        colors={['rgba(0,0,0,0.5)', 'transparent']}
-        locations={[0, 1]}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
-        style={styles.leftVignette}
-        pointerEvents="none"
-      />
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.5)']}
-        locations={[0, 1]}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
-        style={styles.rightVignette}
-        pointerEvents="none"
-      />
+      
 
       {/* Centered logo image */}
       <View style={[styles.centerContainer, { transform: [{ scale: 1.5 }] }]} pointerEvents="none">
